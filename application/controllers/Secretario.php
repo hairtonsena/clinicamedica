@@ -80,7 +80,7 @@ class Secretario extends CI_Controller {
             $this->form_validation->set_rules('cidade', 'Cidade', 'required');
             $this->form_validation->set_rules('cep', 'CEP', 'required');
 
-            $this->form_validation->set_rules('codigo', 'Código', 'required');
+            $this->form_validation->set_rules('codigo', 'Código', 'required|min_length[4]|is_unique[user.codigo]');
             $this->form_validation->set_rules('senha', 'Senha', 'required');
 
 

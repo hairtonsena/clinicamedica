@@ -9,6 +9,15 @@ class PacienteModel extends CI_Model {
         return $this->db->get();
     }
 
+    public function obterTodosPacienteAtivos() {
+        $this->db->select('*');
+        $this->db->from('pessoa');
+        $this->db->join('paciente', 'paciente.pessoa_idpessoa=pessoa.idpessoa');
+        $this->db->where('status','1');
+        $this->db->order_by('nome');
+        return $this->db->get();
+    }
+
     public function obterPacienteId($idPaciente) {
         $this->db->select('*');
         $this->db->from('pessoa');
@@ -74,14 +83,13 @@ class PacienteModel extends CI_Model {
 
             $this->db->where('idendereco', $pacienteAtual[0]->idendereco);
             $this->db->update('endereco', $endereco);
-            
+
             $this->db->where('idpaciente', $pacienteAtual[0]->idpaciente);
             $this->db->update('paciente', $paciente);
-            
         }
     }
 
-    public function excluirSecretario($idendereco) {
+    public function excluirPaciente($idendereco) {
         $this->db->delete('endereco', array('idendereco' => $idendereco));
     }
 

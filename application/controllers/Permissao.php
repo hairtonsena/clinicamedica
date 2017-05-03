@@ -20,6 +20,7 @@ class Permissao extends CI_Controller {
 
     private function credenciaUser($user) {
         $dados_login = array(
+            "userId" => $user[0]->iduser,
             "userNome" => $user[0]->nome,
             "userTipo" => $user[0]->tipo,
             "userEmail" => $user[0]->email,
@@ -59,6 +60,7 @@ class Permissao extends CI_Controller {
     
     public function logout(){
         $dados_logout = array(
+            "userId",
             "userNome",
             "userTipo" ,
             "userEmail" ,

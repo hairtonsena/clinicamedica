@@ -41,10 +41,10 @@ $this->load->view('display/menu.php');
 
                         </td>
                         <td class="text-center">
-                            <button type="button"  class="btn btn-default" title="Mais detalhes"><i class="glyphicon glyphicon-zoom-in"></i></button>
+                            <button type="button" class="btn btn-default" onclick="showPaciente('<?php echo $paciente->idpaciente ?>')"> <i class="fa fa-eye"></i></button>
                             <?php if ($this->session->userdata('userTipo') != 'SECRETARIO') { ?>
                                 <a href="<?php echo base_url('paciente/alterar/' . $paciente->idpaciente) ?>" class="btn btn-primary" title="Alterar" ><i class="fa fa-pencil"></i></a>
-                                <button type="button" onclick="confirmarSecretario('<?php echo $paciente->idpaciente ?>')" class="btn btn-danger" title="Excluir"><i class="fa fa-remove"></i></button>
+                                <button type="button" onclick="confirmarPaciente('<?php echo $paciente->idpaciente ?>')" class="btn btn-danger" title="Excluir"><i class="fa fa-remove"></i></button>
                                 <?php } ?>
                         </td>
                     </tr>

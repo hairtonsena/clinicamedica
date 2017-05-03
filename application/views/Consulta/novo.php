@@ -1,3 +1,4 @@
+
 <?php
 $this->load->view('display/head.php');
 $this->load->view('display/menu.php');
@@ -5,15 +6,18 @@ $this->load->view('display/menu.php');
 <div id="page-wrapper">
     <div class="row">
         <div class="col-lg-12">
-            <h1 class="page-header">Dashboard</h1>
+            <h1 class="page-header">Consulta <small> Nova</small></h1>
         </div>
         <!-- /.col-lg-12 -->
     </div>
     <!-- /.row -->
     <div class="row">
-        <h1>Olá <?php echo $this->session->userdata('userNome') ?>!</h1>
+        <form role="form" action="<?php echo base_url('consulta/nova') ?>" method="POST" >
+            <?php $this->load->view('Consulta/form') ?>
+        </form>
     </div>
     <!-- /.row -->
+
 </div>
 <!-- /#page-wrapper -->
 <?php

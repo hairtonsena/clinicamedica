@@ -9,6 +9,7 @@ class Medico extends CI_Controller {
         $this->userLogado();
         $this->load->library('form_validation');
         $this->load->model('MedicoModel');
+        $this->load->model('ConsultaModel');
     }
 
     private function userLogado() {
@@ -83,7 +84,7 @@ class Medico extends CI_Controller {
             $this->form_validation->set_rules('crm', 'CRM', 'required');
             $this->form_validation->set_rules('especializacao', 'Especializacao', 'required');
 
-            $this->form_validation->set_rules('codigo', 'Código', 'required');
+            $this->form_validation->set_rules('codigo', 'Código', 'required|min_length[4]|is_unique[user.codigo]');
             $this->form_validation->set_rules('senha', 'Senha', 'required');
 
 
@@ -149,16 +150,16 @@ class Medico extends CI_Controller {
 
 
             if ($this->form_validation->run()) {
-                if($this->input->post('senha')!=""){
+                if ($this->input->post('senha') != "") {
                     $form['senha'] = md5($form['senha']);
-                }else{
+                } else {
                     $form['senha'] = $medico->senha;
                 }
                 $form['tipo'] = $medico[0]->tipo;
                 $form['status'] = $medico[0]->status;
                 $form['create_at'] = $medico[0]->create_at;
 
-                
+
                 $this->messagemSecesso('Médico alterado com sucesso');
                 $this->MedicoModel->SalvarDados($form, $idMedico);
 
@@ -184,18 +185,25 @@ class Medico extends CI_Controller {
             $this->messagemErro('Médico não encotrado');
             redirect(base_url('medico'));
         }
-        
+
+        $consultasMedico = $this->ConsultaModel->obterTodosConsultaMedico($medico[0]->iduser)->result();
+        if (count($consultasMedico) > 0) {
+            $this->messagemErro('Médico não pode ser excluido');
+            redirect(base_url('medico'));
+        }
+
         $this->MedicoModel->excluirMedico($medico[0]->idendereco);
-        
+
         $this->messagemSecesso('Médico excluido com sucesso');
         redirect(base_url('medico'));
     }
 
-    
-    private function messagemSecesso($msg){
-        $this->session->set_flashdata('sucesso',$msg);
+    private function messagemSecesso($msg) {
+        $this->session->set_flashdata('sucesso', $msg);
     }
-    private function messagemErro($msg){
-        $this->session->set_flashdata('erro',$msg);
+
+    private function messagemErro($msg) {
+        $this->session->set_flashdata('erro', $msg);
     }
+
 }

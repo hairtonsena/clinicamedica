@@ -9,6 +9,7 @@ class Paciente extends CI_Controller {
         $this->userLogado();
         $this->load->library('form_validation');
         $this->load->model('PacienteModel');
+        $this->load->model('ConsultaModel');
     }
 
     private function userLogado() {
@@ -22,12 +23,12 @@ class Paciente extends CI_Controller {
         for ($i = 0; $i < count($tipo); $i++) {
             if ($this->session->userdata('userTipo') == $tipo[$i]) {
                 $verificar = TRUE;
-               
+
                 break;
             }
         }
-        
-        if($verificar==FALSE){
+
+        if ($verificar == FALSE) {
             redirect(base_url());
         }
     }
@@ -54,7 +55,7 @@ class Paciente extends CI_Controller {
     }
 
     public function index() {
-        $this->permissao(['ADMIN','MEDICO','SECRETARIO']);
+        $this->permissao(['ADMIN', 'MEDICO', 'SECRETARIO']);
 
         $pacientes = $this->PacienteModel->obterTodosPaciente()->result();
 
@@ -64,8 +65,37 @@ class Paciente extends CI_Controller {
         $this->load->view('Paciente/index.php', $dadosView);
     }
 
+    public function show() {
+        $erro = 0;
+        $dados_view = array();
+        
+        if ($this->session->userdata('userLogado') != 'sim') {
+            
+            $erro = 1;
+        } else {
+
+            $idPaciente = (int) strip_tags($this->uri->segment(3));
+
+            $paciente = $this->PacienteModel->obterPacienteId($idPaciente)->result();
+            if (count($paciente) == 0) {
+                
+                $erro = 2;
+            } else {
+                
+                $consultasPaciente = $this->ConsultaModel->obterTodosConsultaPaciente($paciente[0]->idpaciente)->result();
+                
+                $dados_view['paciente'] = $paciente[0];
+                $dados_view['consultas'] = $consultasPaciente;
+            }
+        }
+
+        $dados_view['erro'] = $erro;
+        
+        echo json_encode($dados_view);
+    }
+
     public function novo() {
-        $this->permissao(['ADMIN','MEDICO','SECRETARIO']);
+        $this->permissao(['ADMIN', 'MEDICO', 'SECRETARIO']);
 
         $form = $this->create_forme();
 
@@ -111,7 +141,7 @@ class Paciente extends CI_Controller {
     }
 
     public function alterar() {
-        $this->permissao(['ADMIN','MEDICO']);
+        $this->permissao(['ADMIN', 'MEDICO']);
 
         $idPaciente = (int) strip_tags($this->uri->segment(3));
 
@@ -165,20 +195,26 @@ class Paciente extends CI_Controller {
     }
 
     public function excluir() {
-        $this->permissao(['ADMIN','MEDICO']);
+        $this->permissao(['ADMIN', 'MEDICO']);
 
-        $idSecretario = (int) strip_tags($this->uri->segment(3));
+        $idPaciente = (int) strip_tags($this->uri->segment(3));
 
-        $secretario = $this->SecretarioModel->obterSecretarioId($idSecretario)->result();
-        if (count($secretario) == 0) {
-            $this->messagemErro('Secretário não encotrado');
-            redirect(base_url('secretario'));
+        $paciente = $this->PacienteModel->obterPacienteId($idPaciente)->result();
+        if (count($paciente) == 0) {
+            $this->messagemErro('Paciente não encotrado');
+            redirect(base_url('paciente'));
         }
 
-        $this->SecretarioModel->excluirSecretario($secretario[0]->idendereco);
+        $consultasPaciente = $this->ConsultaModel->obterTodosConsultaPaciente($paciente[0]->idpaciente)->result();
+        if (count($consultasPaciente) > 0) {
+            $this->messagemErro('Paciente não pode ser excluido');
+            redirect(base_url('paciente'));
+        }
+        
+        $this->PacienteModel->excluirPaciente($paciente[0]->idendereco);
 
-        $this->messagemSecesso('Secretário excluido com sucesso');
-        redirect(base_url('secretario'));
+        $this->messagemSecesso('Paciente excluido com sucesso');
+        redirect(base_url('paciente'));
     }
 
     private function messagemSecesso($msg) {

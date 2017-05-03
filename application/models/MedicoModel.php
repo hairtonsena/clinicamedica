@@ -10,6 +10,15 @@ class MedicoModel extends CI_Model {
         return $this->db->get();
     }
 
+    public function obterTodosMedicoAtivos() {
+        $this->db->select('*');
+        $this->db->from('pessoa');
+        $this->db->join('user', 'user.pessoa_idpessoa=pessoa.idpessoa');
+        $this->db->join('medico', 'medico.user_iduser = user.iduser');
+        $this->db->where('status','1');
+        return $this->db->get();
+    }
+
     public function obterMedicoId($idMedico) {
         $this->db->select('*');
         $this->db->from('pessoa');
